@@ -23,6 +23,22 @@ def register(request):
 
 
 def login(request):
+    if request.method == 'POST':
+        nickname = request.POST.get('nickname')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(nickname=nickname)
+        except User.DoesNotExist:
+            return render(request, 'login.html', {'error': '用户不存在'})
+
+        if check_password(password, user.password):
+            # 设置用户登录状态
+            request.session['uid'] = user.id
+            request.session['nickname'] = user.nickname
+            return redirect('/user/info/')
+        else:
+            return render(request, 'login.html', {'error': '密码错误'})
     return render(request, 'login.html', {})
 
 
