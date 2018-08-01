@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Django settings for bbs project.
 
@@ -83,6 +84,9 @@ CACHES = {
         }
     }
 }
+
+# Session 存储引擎
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
