@@ -6,7 +6,7 @@ from post.models import Post
 from post.helper import page_cache
 
 
-@page_cache
+@page_cache(60)
 def post_list(request):
     page = int(request.GET.get('page', 1))  # 当前页码
     total = Post.objects.count()            # 帖子总数
@@ -44,7 +44,7 @@ def edit_post(request):
         return render(request, 'edit_post.html', {'post': post})
 
 
-@page_cache
+@page_cache(5)
 def read_post(request):
     post_id = int(request.GET.get('post_id'))
     post = Post.objects.get(id=post_id)
