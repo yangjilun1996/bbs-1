@@ -2,16 +2,18 @@ from math import ceil
 
 from django.shortcuts import render, redirect
 
+from common import rds
 from post.models import Post
 from post.models import Comment
 from post.models import Tag
 from post.helper import page_cache
 from post.helper import read_count
 from post.helper import get_top_n
+from user.helper import check_perm
 from user.helper import login_required
 
 
-@page_cache(60)
+@page_cache(3)
 def post_list(request):
     page = int(request.GET.get('page', 1))  # 当前页码
     total = Post.objects.count()            # 帖子总数
@@ -27,6 +29,7 @@ def post_list(request):
 
 
 @login_required
+@check_perm('user')
 def create_post(request):
     if request.method == 'POST':
         uid = request.session.get('uid')
@@ -67,6 +70,15 @@ def read_post(request):
     return render(request, 'read_post.html', {'post': post})
 
 
+@login_required
+@check_perm('manager')
+def del_post(request):
+    post_id = int(request.GET.get('post_id'))
+    Post.objects.get(id=post_id).delete()
+    rds.zrem(b'ReadRank', post_id)  # 同时删除排行数据
+    return redirect('/')
+
+
 def search(request):
     keyword = request.POST.get('keyword')
     posts = Post.objects.filter(content__contains=keyword)
@@ -87,6 +99,7 @@ def top10(request):
 
 
 @login_required
+@check_perm('user')
 def comment(request):
     uid = request.session['uid']
     post_id = request.POST.get('post_id')

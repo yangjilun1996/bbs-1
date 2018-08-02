@@ -14,7 +14,23 @@ class User(models.Model):
     plt_icon = models.CharField(max_length=256, default='')
     age = models.IntegerField(default=18)
     sex = models.CharField(max_length=8, choices=SEX)
+    perm_id = models.IntegerField()
 
     @property
     def avatar(self):
         return self.icon.url if self.icon else self.plt_icon
+
+    @property
+    def perm(self):
+        if not hasattr(self, '_perm'):
+            self._perm = Permission.objects.get(id=self.perm_id)
+        return self._perm
+
+    def has_perm(self, perm_name):
+        need_perm = Permission.objects.get(name=perm_name)
+        return self.perm.level >= need_perm.level
+
+
+class Permission(models.Model):
+    level = models.IntegerField()
+    name = models.CharField(max_length=16, unique=True)
