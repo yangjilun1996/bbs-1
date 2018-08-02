@@ -6,6 +6,7 @@ from post.models import Post
 from post.helper import page_cache
 from post.helper import read_count
 from post.helper import get_top_n
+from user.helper import login_required
 
 
 @page_cache(60)
@@ -23,15 +24,18 @@ def post_list(request):
                   {'posts': posts, 'pages': range(pages)})
 
 
+@login_required
 def create_post(request):
     if request.method == 'POST':
+        uid = request.session.get('uid')
         title = request.POST.get('title')
         content = request.POST.get('content')
-        post = Post.objects.create(title=title, content=content)
+        post = Post.objects.create(uid=uid, title=title, content=content)
         return redirect('/post/read/?post_id=%s' % post.id)
     return render(request, 'create_post.html')
 
 
+@login_required
 def edit_post(request):
     if request.method == 'POST':
         post_id = int(request.POST.get('post_id'))

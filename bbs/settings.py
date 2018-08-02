@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware', # | process_request   process_response |
     'django.middleware.common.CommonMiddleware',            # | process_request   process_response |
     'django.middleware.csrf.CsrfViewMiddleware',            # V process_request   process_response |
-    'common.middleware.BlockMiddleware',
+    # 'common.middleware.BlockMiddleware',
 ]
 
 ROOT_URLCONF = 'bbs.urls'
