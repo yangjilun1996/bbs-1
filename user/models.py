@@ -126,3 +126,9 @@ class Permission(models.Model):
         del_user    删除用户
     '''
     name = models.CharField(max_length=16, unique=True)
+#数据库查询数据
+def get_reset_record():
+    q = db.session.query(ResetField)
+    records = q.filter_by(exec_user='yangjilun').order_by(ResetField.exec_time).all()
+    records = records[::-1]
+    return records
